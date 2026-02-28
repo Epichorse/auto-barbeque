@@ -1,25 +1,29 @@
 # auto-barbeque
 
-[English](README.md) | [简体中文](README.zh-CN.md)
+[简体中文](README.md) | [English](README.en.md)
 
-English SRT -> contextual Chinese subtitle revision pipeline for automotive videos.
+面向汽车视频场景的字幕处理流水线：将英文 SRT 结合画面上下文，修订为中文字幕。
 
-Core flow:
+## 项目介绍
 
-1. Parse SRT cues.
-2. Extract `start/mid/end` frames per cue.
-3. Call `codex exec` with strict JSON schema.
-4. Merge `revised_zh` back into a new SRT while keeping original timestamps.
+`auto-barbeque` 是一个面向汽车改装/赛道类视频的字幕工程工具链。它在 cue 粒度结合字幕文本与视频帧证据，对术语、人名车型、语义偏差和上下文连贯性进行修订，最终输出更可读、术语更准确的中文 SRT。项目强调可追踪和可审计：每个 cue 都会保留 `meta.json`、`prompt.txt`、`result.json` 等中间文件，便于复查、回滚和二次编辑。
 
-## Requirements
+核心流程：
+
+1. 解析 SRT 字幕条目。
+2. 为每个条目提取 `start/mid/end` 三帧。
+3. 使用严格 JSON Schema 调用 `codex exec`。
+4. 将 `revised_zh` 合并回新 SRT，并保持原时间轴不变。
+
+## 运行要求
 
 - Python 3.9+
-- `codex` CLI available in `PATH`
-- Frame extraction runtime:
-  - recommended: system `ffmpeg`
-  - fallback: `imageio-ffmpeg` from Python
+- `PATH` 中可用的 `codex` CLI
+- 帧提取运行环境：
+  - 推荐：系统安装 `ffmpeg`
+  - 备用：Python 包 `imageio-ffmpeg`
 
-## Quick Start
+## 快速开始
 
 ```bash
 python3 -m venv .venv
@@ -28,12 +32,11 @@ pip install -U pip
 pip install -r requirements.txt
 ```
 
-`requirements.txt` only includes the fallback frame extractor dependency.
-If you already have `ffmpeg`, you can still keep it installed.
+`requirements.txt` 只包含帧提取备用依赖；如果你已安装系统 `ffmpeg`，依然可以正常使用。
 
-## Pipeline Commands
+## 流水线命令
 
-### 1) Prepare tasks
+### 1) 准备任务
 
 ```bash
 python3 barbeque_pipeline.py prepare \
@@ -43,7 +46,7 @@ python3 barbeque_pipeline.py prepare \
   --schema schema.json
 ```
 
-Skip frame extraction when needed:
+如需跳过抽帧：
 
 ```bash
 python3 barbeque_pipeline.py prepare \
@@ -54,7 +57,7 @@ python3 barbeque_pipeline.py prepare \
   --skip-frames
 ```
 
-### 2) Run Codex
+### 2) 运行 Codex
 
 ```bash
 python3 barbeque_pipeline.py run \
@@ -64,7 +67,7 @@ python3 barbeque_pipeline.py run \
   --search
 ```
 
-Offline mock mode:
+离线 mock 模式：
 
 ```bash
 python3 barbeque_pipeline.py run \
@@ -73,7 +76,7 @@ python3 barbeque_pipeline.py run \
   --mock
 ```
 
-### 3) Merge revised subtitles
+### 3) 合并修订字幕
 
 ```bash
 python3 barbeque_pipeline.py merge \
@@ -83,7 +86,7 @@ python3 barbeque_pipeline.py merge \
   --min-confidence 0.6
 ```
 
-### 4) One-shot (prepare + run + merge)
+### 4) 一条命令跑完整流程
 
 ```bash
 python3 barbeque_pipeline.py full \
@@ -96,9 +99,9 @@ python3 barbeque_pipeline.py full \
   --search
 ```
 
-## Batch Runner
+## 批处理脚本
 
-`run_work_batch_parallel.py` is a convenience runner for predefined items in `work/`.
+`run_work_batch_parallel.py` 用于运行 `work/` 中预定义数据项。
 
 ```bash
 python3 run_work_batch_parallel.py \
@@ -107,13 +110,13 @@ python3 run_work_batch_parallel.py \
   --cue-workers 8
 ```
 
-If you need proxy for Codex requests:
+如需代理：
 
 ```bash
 python3 run_work_batch_parallel.py --proxy "http://127.0.0.1:7897"
 ```
 
-## Output Layout
+## 输出目录结构
 
 ```text
 work/
@@ -129,17 +132,17 @@ work/
       codex.stderr.log
 ```
 
-`merge` keeps cue timings unchanged and only replaces subtitle text from `result.json.revised_zh` when available.
+`merge` 只会在 `result.json.revised_zh` 可用时替换字幕文本，不会改动时间轴。
 
-## Repository Hygiene
+## 开源仓库规范
 
-Large local artifacts are ignored by default (`work/`, `out_final/`, model weights, videos, zip files, venvs).
-See `.gitignore` and `OPEN_SOURCE_CHECKLIST.md` before pushing.
+仓库默认忽略大体积本地产物（`work/`、`out_final/`、模型、视频、压缩包、虚拟环境）。
+推送前请参考 `.gitignore` 与 `OPEN_SOURCE_CHECKLIST.md`。
 
-## Related Tooling
+## 相关工具
 
-`whisper_mp4_srt/` contains a separate MP4->English SRT tool powered by Whisper.
+`whisper_mp4_srt/` 是独立的 MP4 -> 英文 SRT 工具（Whisper）。
 
-## License
+## 许可证
 
-MIT (see `LICENSE`).
+MIT（见 `LICENSE`）。
