@@ -1,0 +1,3 @@
+openai-whisper>=20231117
+torch>=2.1.0
+webrtcvad-wheels>=2.0.14
