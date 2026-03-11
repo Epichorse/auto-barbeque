@@ -1,0 +1,31 @@
+# barbeque_pipeline.py - Ollama translator config
+# Usage: python barbeque_pipeline.py --config barbeque_ollama.yaml run ...
+
+# ── Translator ────────────────────────────────────────────────────────────────
+translator: ollama
+model: qwen3.5:4b       # any model in: ollama list
+think_budget: 512       # 0 = disable thinking (faster), >0 = token budget
+ollama_timeout: 300     # HTTP timeout per request in seconds
+
+# ── Serial batch (context window) ────────────────────────────────────────────
+serial_batch_size: 6    # cues per Ollama call
+serial_overlap: 1       # overlap between adjacent windows
+serial_history_size: 6  # previous translated cues shown as context
+
+# ── Vision / frames ──────────────────────────────────────────────────────────
+image_policy: auto      # auto: use whatever frames remain after YOLO filter
+frame_mode: three       # three | mid | none | adaptive  (for prepare stage)
+
+# ── YOLO frame filter (prepare stage) ────────────────────────────────────────
+yolo_filter: true                  # run YOLO-World after frame extraction
+yolo_model: yolov8x-worldv2.pt     # largest YOLO-World model
+yolo_person_threshold: 0.70        # discard frame if person area > 70%
+yolo_conf: 0.50                    # detection confidence threshold
+
+# ── Paths (override on CLI if needed) ────────────────────────────────────────
+# tasks_dir: work/tasks
+# schema: schema.json
+
+# ── Misc ─────────────────────────────────────────────────────────────────────
+force: false            # overwrite existing result.json
+workers: 1              # serial=1 (ollama is sequential by default)

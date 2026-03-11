@@ -26,7 +26,7 @@ env/
 *.tmp
 *.swp
 
-# Large binary assets (keep repo code-only by default)
+# Large binary assets
 *.zip
 *.tar
 *.tar.gz
@@ -39,11 +39,8 @@ env/
 *.avi
 
 # Project runtime data and outputs
+models/
+output/
+output_whisperx/
 work/
 out_final/
-models/
-
-# Whisper helper runtime artifacts
-whisper_mp4_srt/models/
-whisper_mp4_srt/output/
-whisper_mp4_srt/.venv/

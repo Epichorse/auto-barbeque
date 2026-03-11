@@ -1,0 +1,57 @@
+# Full pipeline config: prepare + run + merge in one command.
+# Usage:
+#   python barbeque_pipeline.py --config config_jzx_full.yaml full \
+#     --video "video.mp4" \
+#     --srt "output/jzx100/en.guide.srt" \
+#     --slug jzx100
+#
+# --slug jzx100 会自动推导:
+#   --tasks-dir output/jzx100/tasks
+#   --out       output/jzx100/zh.srt
+
+# ── Project ─────────────────────────────────────────────────────────────────
+slug: "jzx100"
+schema: "schema.json"
+
+# ── Translator ──────────────────────────────────────────────────────────────
+translator: opencode
+model: "minimax/MiniMax-M2.5"
+reasoning_effort: high
+proxy: ""
+search: false
+codex_timeout_sec: 240
+
+# ── Serial batch (context window) ──────────────────────────────────────────
+serial_batch_size: 30
+serial_overlap: 8
+serial_history_size: 6
+
+# ── Frame extraction (prepare stage) ───────────────────────────────────────
+frame_mode: three
+pad: 0.10
+short_cue_threshold: 0.40
+short_cue_pad: 0.03
+overwrite_frames: false
+skip_frames: false
+
+# ── YOLO frame filter (prepare stage) ──────────────────────────────────────
+yolo_filter: true
+yolo_model: "yolov8x-worldv2.pt"
+yolo_person_threshold: 0.35
+yolo_conf: 0.50
+
+# ── Run stage ───────────────────────────────────────────────────────────────
+image_policy: three
+workers: 1
+force: false
+
+# ── Merge stage ─────────────────────────────────────────────────────────────
+min_confidence: 0.7
+use_anchor_timing: true
+anchor_min_duration: 0.22
+anchor_smooth_gap: 0.06
+
+# ── Refine (optional, set refine_context_pass: true to enable) ─────────────
+refine_context_pass: false
+refine_timeout_sec: 180
+refine_save_every: 20

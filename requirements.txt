@@ -1,1 +1,3 @@
-imageio-ffmpeg>=0.4.9
+faster-whisper
+pyyaml
+deepmultilingualpunctuation

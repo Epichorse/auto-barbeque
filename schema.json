@@ -5,6 +5,7 @@
     "cue_id",
     "revised_zh",
     "confidence",
+    "join_with_prev",
     "term_fixes"
   ],
   "properties": {
@@ -18,6 +19,9 @@
       "type": "number",
       "minimum": 0,
       "maximum": 1
+    },
+    "join_with_prev": {
+      "type": "boolean"
     },
     "term_fixes": {
       "type": "array",
